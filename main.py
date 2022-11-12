@@ -7,6 +7,9 @@ import detrd
 import helpers
 import torchvision.transforms as T
 
+from os import listdir
+from os.path import isfile, join
+
 torch.set_grad_enabled(False);
 
 detr = detrd.Detr(num_classes=91)
@@ -44,27 +47,22 @@ transform = T.Compose([
     T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
-# url = 'http://images.cocodataset.org/val2017/000000039769.jpg'
-# url = "http://images.cocodataset.org/test-stuff2017/000000000311.jpg"
-# url = "http://images.cocodataset.org/test-stuff2017/000000000128.jpg"
-url ="http://images.cocodataset.org/test-stuff2017/000000000527.jpg"
+uris = [f for f in listdir('./originals') if isfile(join('./originals', f))]
 
-im = Image.open(requests.get(url, stream=True).raw)
+def export_results():
+    for uri in uris:
+        im = Image.open(f'./originals/{uri}')
+        scores, boxes = helpers.detect(im, detr, transform)
 
-scores, boxes = helpers.detect(im, detr, transform)
+        plt.figure(figsize=(16,10))
+        plt.imshow(im)
+        ax = plt.gca()
+        for p, (xmin, ymin, xmax, ymax), c in zip(scores, boxes.tolist(), COLORS * 100):
+            ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin, fill=False, color=c, linewidth=3))
+            cl = p.argmax()
+            text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
+            ax.text(xmin, ymin, text, fontsize=15, bbox=dict(facecolor='yellow', alpha=0.5))
+        plt.axis('off')
+        plt.savefig(f'export/exp_{str(uuid.uuid4())}.jpg')
 
-def plot_results(pil_img, prob, boxes):
-    plt.figure(figsize=(16,10))
-    plt.imshow(pil_img)
-    ax = plt.gca()
-    for p, (xmin, ymin, xmax, ymax), c in zip(prob, boxes.tolist(), COLORS * 100):
-        ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
-                                   fill=False, color=c, linewidth=3))
-        cl = p.argmax()
-        text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
-        ax.text(xmin, ymin, text, fontsize=15,
-                bbox=dict(facecolor='yellow', alpha=0.5))
-    plt.axis('off')
-    plt.savefig(f'image_{str(uuid.uuid4())}.jpg')
-
-plot_results(im, scores, boxes)
+export_results()
