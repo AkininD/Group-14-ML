@@ -47,11 +47,11 @@ transform = T.Compose([
     T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
-uris = [f for f in listdir('./originals') if isfile(join('./originals', f))]
+image_files = [f for f in listdir('./originals') if isfile(join('./originals', f))]
 
 def export_results():
-    for uri in uris:
-        im = Image.open(f'./originals/{uri}')
+    for file in image_files:
+        im = Image.open(f'./originals/{file}')
         scores, boxes = helpers.detect(im, detr, transform)
 
         plt.figure(figsize=(16,10))
