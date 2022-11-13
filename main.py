@@ -48,11 +48,13 @@ transform = T.Compose([
 ])
 
 image_files = [f for f in listdir('./originals') if isfile(join('./originals', f))]
-
+print(f'Files found: {len(image_files)}')
+print('Object detection has start')
 def export_results():
     for file in image_files:
         im = Image.open(f'./originals/{file}')
         scores, boxes = helpers.detect(im, detr, transform)
+        detected_objects = []
 
         plt.figure(figsize=(16,10))
         plt.imshow(im)
@@ -61,8 +63,13 @@ def export_results():
             ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin, fill=False, color=c, linewidth=3))
             cl = p.argmax()
             text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
+            detected_objects.append(text)
             ax.text(xmin, ymin, text, fontsize=15, bbox=dict(facecolor='yellow', alpha=0.5))
         plt.axis('off')
-        plt.savefig(f'export/exp_{str(uuid.uuid4())}.jpg')
+        filename = f'exp_{str(uuid.uuid4())}.jpg'
+        list_obj = ', '.join(detected_objects)
+        plt.savefig(f'export/{filename}')
+        print(f'Detected: {list_obj} in {file} and exported to {filename}')
+    print('Detecting finished succesfully')
 
 export_results()
