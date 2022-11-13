@@ -26,3 +26,8 @@ TODO: добавить какие данные можно передавать
 - перекрестные сслыки на этой странице (на заголовок и содержание)
 - добавить лицензию
 - добавить датасет пробный
+
+
+#### Источники:
+https://github.com/facebookresearch/detr
+https://colab.research.google.com/github/facebookresearch/detr/blob/colab/notebooks/detr_demo.ipynb#scrollTo=Jf59UNQ37QhJ
