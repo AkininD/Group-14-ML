@@ -46,7 +46,7 @@ _учебный проект группы 14 Программная инжене
 
 ```bash
 pip install torch
-pip inctall matplotlib
+pip install matplotlib
 pip install timm
 ```
 
