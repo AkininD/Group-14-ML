@@ -50,6 +50,8 @@ transform = T.Compose([
 image_files = [f for f in listdir('./originals') if isfile(join('./originals', f))]
 print(f'Files found: {len(image_files)}')
 print('Object detection has start')
+
+
 def export_results():
     for file in image_files:
         im = Image.open(f'./originals/{file}')
@@ -71,5 +73,6 @@ def export_results():
         plt.savefig(f'export/{filename}')
         print(f'Detected: {list_obj} in {file} and exported to {filename}')
     print('Detecting finished succesfully')
+
 
 export_results()
