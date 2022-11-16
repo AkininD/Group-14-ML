@@ -111,7 +111,10 @@ python3 main.py
 7. [Статья End-to-End Object Detection with Transformers](https://arxiv.org/abs/2005.12872)
 
 ### Авторы
-Искужин И.Р., Акинин Дмитрий В., Ахметов Вадим М.
+- [Искужин И.Р.](https://github.com/Lemeri02)
+- [Акинин Дмитрий В.](https://github.com/AkininD)
+- [Ахметов Вадим М.](https://github.com/vadim328)
+
 студенты 1 курса магистратуры "Инженерия машинного обучения" УрФУ.
 
 ноябрь, 2022 год.
