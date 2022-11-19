@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 import requests
 import uuid
 import matplotlib.pyplot as plt
@@ -7,17 +7,14 @@ import detrd
 import helpers
 import torchvision.transforms as T
 
+import io
+import streamlit as st
+
 from os import listdir
 from os.path import isfile, join
 
 torch.set_grad_enabled(False);
 
-detr = detrd.Detr(num_classes=91)
-state_dict = torch.hub.load_state_dict_from_url(
-    url='https://dl.fbaipublicfiles.com/detr/detr_demo-da2a99e9.pth',
-    map_location='cpu', check_hash=True)
-detr.load_state_dict(state_dict)
-detr.eval();
 
 # COCO classes
 CLASSES = [
@@ -47,32 +44,64 @@ transform = T.Compose([
     T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
-image_files = [f for f in listdir('./originals') if isfile(join('./originals', f))]
-print(f'Files found: {len(image_files)}')
-print('Object detection has start')
+
+@st.cache(allow_output_mutation=True)
+def load_model():
+    detr = detrd.Detr(num_classes=91)
+    state_dict = torch.hub.load_state_dict_from_url(
+        url='https://dl.fbaipublicfiles.com/detr/detr_demo-da2a99e9.pth',
+        map_location='cpu', check_hash=True)
+    detr.load_state_dict(state_dict)
+    detr.eval();
+    return detr
 
 
-def export_results():
-    for file in image_files:
-        im = Image.open(f'./originals/{file}')
-        scores, boxes = helpers.detect(im, detr, transform)
-        detected_objects = []
+def detect_objects(image_data):
+    scores, boxes = helpers.detect(image_data, model, transform)
 
-        plt.figure(figsize=(16,10))
-        plt.imshow(im)
-        ax = plt.gca()
-        for p, (xmin, ymin, xmax, ymax), c in zip(scores, boxes.tolist(), COLORS * 100):
-            ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin, fill=False, color=c, linewidth=3))
-            cl = p.argmax()
-            text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
-            detected_objects.append(text)
-            ax.text(xmin, ymin, text, fontsize=15, bbox=dict(facecolor='yellow', alpha=0.5))
-        plt.axis('off')
-        filename = f'exp_{str(uuid.uuid4())}.jpg'
-        list_obj = ', '.join(detected_objects)
-        plt.savefig(f'export/{filename}')
-        print(f'Detected: {list_obj} in {file} and exported to {filename}')
-    print('Detecting finished succesfully')
+    fig = plt.figure(figsize=(7, 7))
+    plt.imshow(image_data)
+    ax = plt.gca()
+    for p, (xmin, ymin, xmax, ymax), c in zip(scores, boxes.tolist(), COLORS * 100):
+        ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin, fill=False, color=c, linewidth=3))
+        cl = p.argmax()
+        text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
+        ax.text(xmin, ymin, text, fontsize=15, bbox=dict(facecolor='yellow', alpha=0.5))
+    plt.axis('off')
+    return fig
 
 
-export_results()
+def load_image():
+    """Создание формы для загрузки изображения"""
+    # Форма для загрузки изображения средствами Streamlit
+    uploaded_file = st.file_uploader(label='Выберите изображение для распознавания')
+    if uploaded_file is not None:
+        # Получение загруженного изображения
+        image_data = uploaded_file.getvalue()
+        # Показ загруженного изображения на Web-странице средствами Streamlit
+        st.image(image_data)
+        return Image.open(io.BytesIO(image_data))
+    else:
+        return None
+
+
+# Выводим заголовок страницы средствами Streamlit
+st.title('Распознавание объектов на изображении')
+
+
+def print_image(img):
+    if img is not None:
+        st.title('Распознанное изображение')
+        fig = detect_objects(img)
+        st.pyplot(fig)
+    else:
+        return None
+
+
+# Вызываем функцию загрузки модели распознавания
+model = load_model()
+# Вызываем функцию создания формы загрузки изображения
+img = load_image()
+# При нажатии кнопки распознаем объекты
+if st.button("Распознать объекты"):
+    print_image(img)
