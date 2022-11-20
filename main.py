@@ -1,5 +1,4 @@
 from PIL import Image, ImageDraw, ImageFont
-import matplotlib.pyplot as plt
 import torch
 import detrd
 import helpers

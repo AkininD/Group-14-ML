@@ -52,7 +52,12 @@ _учебный проект группы 14 Программная инжене
 pip install torch
 pip install timm
 pip install streamlit
+```
+
+При необходимости, обновить библиотеку Pillow:
+```
 python3 -m pip install --upgrade pip
+python3 -m pip install --upgrade Pillow
 ```
 
 _Примечание: Требуется PIL версии не ниже 8.0.0_
