@@ -55,6 +55,8 @@ pip install matplotlib
 pip install timm
 ```
 
+Требуется PIL версии не ниже 8.0.0
+
 Помещаем тестовые изображения формата jpg, png в директорий проекта `originals` и запускаем проект командой
 
 ```bash
@@ -109,6 +111,11 @@ python3 main.py
 5. [DETR notebooks](https://github.com/NielsRogge/Transformers-Tutorials/tree/master/DETR)
 6. [huggingface.co: Про DETR](https://huggingface.co/docs/transformers/model_doc/detr)
 7. [Статья End-to-End Object Detection with Transformers](https://arxiv.org/abs/2005.12872)
+
+### Обновление
+- Матпотлиб перевели в PIL
+- Добавлен веб сервер Streamlit
+- 
 
 ### Авторы
 - [Искужин И.Р.](https://github.com/Lemeri02)
