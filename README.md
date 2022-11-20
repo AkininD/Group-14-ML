@@ -103,6 +103,7 @@ http://localhost:8501/
 5. [DETR notebooks](https://github.com/NielsRogge/Transformers-Tutorials/tree/master/DETR)
 6. [huggingface.co: Про DETR](https://huggingface.co/docs/transformers/model_doc/detr)
 7. [Статья End-to-End Object Detection with Transformers](https://arxiv.org/abs/2005.12872)
+8. [Streamlit](https://streamlit.io/)
 
 ### Обновление
 - Заменили библиотеку matplotlib на PIL

@@ -8,7 +8,6 @@ import streamlit as st
 
 torch.set_grad_enabled(False);
 
-
 # TODO: константу COLORS, CLASSES вынести в отдельный файл и импортировать в файл main.py
 # COCO classes
 CLASSES = [
@@ -28,10 +27,9 @@ CLASSES = [
     'toothbrush'
 ]
 
-
-COLORS = [(46,139,87), (128,0,0), (220,20,60), (255,99,71), (205,92,92), (255,160,122),
-          (128,128,0), (107,142,35), (0,128,0), (34,139,34), (32,178,170), (255,140,0),
-          (0,128,128), (95,158,160), (30,144,255), (0,0,128), (65,105,225), (186,85,211)]
+COLORS = [(46, 139, 87), (128, 0, 0), (220, 20, 60), (255, 99, 71), (205, 92, 92), (255, 160, 122),
+          (128, 128, 0), (107, 142, 35), (0, 128, 0), (34, 139, 34), (32, 178, 170), (255, 140, 0),
+          (0, 128, 128), (95, 158, 160), (30, 144, 255), (0, 0, 128), (65, 105, 225), (186, 85, 211)]
 
 transform = T.Compose([
     T.Resize(800),
@@ -52,7 +50,7 @@ def load_model():
 
 
 def detect_objects(image_data):
-    image =  Image.open(io.BytesIO(image_data))
+    image = Image.open(io.BytesIO(image_data))
     scores, boxes = helpers.detect(image, model, transform)
     for p, (xmin, ymin, xmax, ymax), c in zip(scores, boxes.tolist(), COLORS * 100):
         cl = p.argmax()
@@ -61,7 +59,7 @@ def detect_objects(image_data):
         draw.rectangle(((xmin, ymin), (xmax, ymax)), fill=None, outline=c, width=2)
         font = ImageFont.truetype("./assets/roboto.ttf", 14)
         left, top, right, bottom = draw.textbbox((xmin, ymin), text, font=font)
-        draw.rectangle((left-5, top-5, right+5, bottom+5), fill="yellow")
+        draw.rectangle((left - 5, top - 5, right + 5, bottom + 5), fill="yellow")
         draw.text((xmin, ymin), text, font=font, fill="black")
     return image
 
@@ -99,7 +97,7 @@ def main():
                 st.success('Сделано!')
                 st.image(result_image, use_column_width=True)
         except:
-                st.error('Ошибка! Некорректный формат файла!')
+            st.error('Ошибка! Некорректный формат файла!')
 
 
 if __name__ == "__main__":
