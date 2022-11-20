@@ -1,21 +1,16 @@
 from PIL import Image, ImageDraw, ImageFont
-import requests
-import uuid
 import matplotlib.pyplot as plt
 import torch
 import detrd
 import helpers
 import torchvision.transforms as T
-
 import io
 import streamlit as st
-
-from os import listdir
-from os.path import isfile, join
 
 torch.set_grad_enabled(False);
 
 
+# TODO: константу COLORS, CLASSES вынести в отдельный файл и импортировать в файл main.py
 # COCO classes
 CLASSES = [
     'N/A', 'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
@@ -34,9 +29,10 @@ CLASSES = [
     'toothbrush'
 ]
 
-# colors for visualization
-COLORS = [[0.000, 0.447, 0.741], [0.850, 0.325, 0.098], [0.929, 0.694, 0.125],
-          [0.494, 0.184, 0.556], [0.466, 0.674, 0.188], [0.301, 0.745, 0.933]]
+
+COLORS = [(46,139,87), (128,0,0), (220,20,60), (255,99,71), (205,92,92), (255,160,122),
+          (128,128,0), (107,142,35), (0,128,0), (34,139,34), (32,178,170), (255,140,0),
+          (0,128,128), (95,158,160), (30,144,255), (0,0,128), (65,105,225), (186,85,211)]
 
 transform = T.Compose([
     T.Resize(800),
@@ -57,18 +53,18 @@ def load_model():
 
 
 def detect_objects(image_data):
-    scores, boxes = helpers.detect(image_data, model, transform)
-
-    fig = plt.figure(figsize=(7, 7))
-    plt.imshow(image_data)
-    ax = plt.gca()
+    image =  Image.open(io.BytesIO(image_data))
+    scores, boxes = helpers.detect(image, model, transform)
     for p, (xmin, ymin, xmax, ymax), c in zip(scores, boxes.tolist(), COLORS * 100):
-        ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin, fill=False, color=c, linewidth=3))
         cl = p.argmax()
         text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
-        ax.text(xmin, ymin, text, fontsize=15, bbox=dict(facecolor='yellow', alpha=0.5))
-    plt.axis('off')
-    return fig
+        draw = ImageDraw.Draw(image)
+        draw.rectangle(((xmin, ymin), (xmax, ymax)), fill=None, outline=c, width=2)
+        font = ImageFont.truetype("./assets/roboto.ttf", 14)
+        left, top, right, bottom = draw.textbbox((xmin, ymin), text, font=font)
+        draw.rectangle((left-5, top-5, right+5, bottom+5), fill="yellow")
+        draw.text((xmin, ymin), text, font=font, fill="black")
+    return image
 
 
 def load_image():
@@ -78,30 +74,34 @@ def load_image():
     if uploaded_file is not None:
         # Получение загруженного изображения
         image_data = uploaded_file.getvalue()
-        # Показ загруженного изображения на Web-странице средствами Streamlit
-        st.image(image_data)
-        return Image.open(io.BytesIO(image_data))
-    else:
-        return None
-
-
-# Выводим заголовок страницы средствами Streamlit
-st.title('Распознавание объектов на изображении')
-
-
-def print_image(img):
-    if img is not None:
-        st.title('Распознанное изображение')
-        fig = detect_objects(img)
-        st.pyplot(fig)
+        return image_data
     else:
         return None
 
 
 # Вызываем функцию загрузки модели распознавания
 model = load_model()
-# Вызываем функцию создания формы загрузки изображения
-img = load_image()
-# При нажатии кнопки распознаем объекты
-if st.button("Распознать объекты"):
-    print_image(img)
+
+
+def main():
+    # Выводим заголовок страницы средствами Streamlit
+    st.title('Распознавание объектов на изображении')
+    # Вызываем функцию создания формы загрузки изображения
+    img = load_image()
+
+    if img is not None:
+        btn = st.button("Распознать объекты")
+        try:
+            st.image(img, use_column_width=True)
+            if btn:
+                with st.spinner('Распознаем картинку...'):
+                    result_image = detect_objects(img)
+                st.title('Распознанное изображение')
+                st.success('Сделано!')
+                st.image(result_image, use_column_width=True)
+        except:
+                st.error('Ошибка! Некорректный формат файла!')
+
+
+if __name__ == "__main__":
+    main()
