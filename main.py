@@ -8,7 +8,6 @@ import streamlit as st
 
 torch.set_grad_enabled(False);
 
-# TODO: константу COLORS, CLASSES вынести в отдельный файл и импортировать в файл main.py
 # COCO classes
 CLASSES = [
     'N/A', 'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
