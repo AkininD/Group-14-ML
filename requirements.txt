@@ -1,7 +1,3 @@
-PIL
 streamlit
 torch
 timm
-torchvision.transforms
-io
-torchvision.models
