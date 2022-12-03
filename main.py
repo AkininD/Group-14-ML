@@ -4,7 +4,7 @@ import detrd
 import helpers
 import torchvision.transforms as T
 import io
-import streamlit as st
+##import streamlit as st
 
 torch.set_grad_enabled(False);
 
@@ -37,7 +37,7 @@ transform = T.Compose([
 ])
 
 
-@st.cache(allow_output_mutation=True)
+##@st.cache(allow_output_mutation=True)
 def load_model():
     detr = detrd.Detr(num_classes=91)
     state_dict = torch.hub.load_state_dict_from_url(
@@ -48,56 +48,35 @@ def load_model():
     return detr
 
 
-def detect_objects(image_data):
-    image = Image.open(io.BytesIO(image_data))
+def detect_objects(image, name):
+    #image = Image.open(io.BytesIO(image_data))
+    #image.save(io.BytesIO(), 'jpeg')
+    text_result = str()
     scores, boxes = helpers.detect(image, model, transform)
     for p, (xmin, ymin, xmax, ymax), c in zip(scores, boxes.tolist(), COLORS * 100):
         cl = p.argmax()
         text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
+        text_result += text + '/'
         draw = ImageDraw.Draw(image)
         draw.rectangle(((xmin, ymin), (xmax, ymax)), fill=None, outline=c, width=2)
         font = ImageFont.truetype("./assets/roboto.ttf", 14)
         left, top, right, bottom = draw.textbbox((xmin, ymin), text, font=font)
         draw.rectangle((left - 5, top - 5, right + 5, bottom + 5), fill="yellow")
         draw.text((xmin, ymin), text, font=font, fill="black")
-    return image
-
-
-def load_image():
-    """Создание формы для загрузки изображения"""
-    # Форма для загрузки изображения средствами Streamlit
-    uploaded_file = st.file_uploader(label='Выберите изображение для распознавания')
-    if uploaded_file is not None:
-        # Получение загруженного изображения
-        image_data = uploaded_file.getvalue()
-        return image_data
-    else:
-        return None
+    image.save(f'./static/{name}')
+    return text_result
 
 
 # Вызываем функцию загрузки модели распознавания
 model = load_model()
 
 
-def main():
-    # Выводим заголовок страницы средствами Streamlit
-    st.title('Распознавание объектов на изображении')
-    # Вызываем функцию создания формы загрузки изображения
-    img = load_image()
-
-    if img is not None:
-        btn = st.button("Распознать объекты")
-        try:
-            st.image(img, use_column_width=True)
-            if btn:
-                with st.spinner('Распознаем картинку...'):
-                    result_image = detect_objects(img)
-                st.title('Распознанное изображение')
-                st.success('Сделано!')
-                st.image(result_image, use_column_width=True)
-        except:
-            st.error('Ошибка! Некорректный формат файла!')
+"""def main():
+    img = Image.open(f'./originals/2022-11-13_00-55.png')
+    result_image, scores = detect_objects(img)
+    result_image.save("new2.jpg")
+    print(scores.split('/'))
 
 
 if __name__ == "__main__":
-    main()
+    main()"""
