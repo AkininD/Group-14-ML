@@ -15,7 +15,6 @@ _учебный проект группы 14 Программная инжене
 - [Источники](#источники)
 - [Обновление](#обновление)
 - [Авторы](#авторы)
-- [Проект на Streamlit](#проект-на-streamlit)
 
 
 ### Цель проекта
@@ -44,7 +43,7 @@ _учебный проект группы 14 Программная инжене
 - Интерпретатор Python не ниже 3.8
 - программа для просмотра изображений (jpg)
 - подключение к интернету
-- OS Ubuntu 20+ (прим: на Mac OS и Windows не тестировалось)
+- OS Ubuntu 20+ (прим: на Mac OS) или Windows(IDE: PyCharm)
 
 ### Запуск и работа с проектом
 
@@ -53,7 +52,8 @@ _учебный проект группы 14 Программная инжене
 ```bash
 pip install torch
 pip install timm
-pip install streamlit
+pip install uvicorn
+pip install fastapi
 ```
 
 При необходимости, обновить библиотеку Pillow:
@@ -68,22 +68,20 @@ _Примечание: Требуется PIL версии не ниже 8.0.0_
 Запускаем проект командой
 ```bash
 # находясь в директории проекта запустить проект
-streamlit run main.py
-или
-streamlit run main.py --logger.level=debug # в режиме отладки
+uvicorn myapi:app
 ```
 Открываем в браузере адрес:
 ```
-http://localhost:8501/
+http://127.0.0.1:8000/docs 
 ```
 
-Загружаем кнопкой "Browse files" тестовые изображения формата jpg, png и нажимаем на кнопку "Распознать объекты".
+Выбираем метод "Post" и в теле загружаем кнопкой "Выберите файл" тестовые изображения формата jpg, png и нажимаем на кнопку "Execute".
 
-Ниже веб страницы появится обработанное изображение.
+В формате Json отобразятся в распознанные объекты и ссылка на распознанное изображение
 
 ### Пример как работает программа
 
-<img src=".github/example.png" alt="cats" width="400"/>
+<img src=".github/example1.png" alt="cats" width="400"/>
 
 ### Issues
 
@@ -105,20 +103,18 @@ http://localhost:8501/
 5. [DETR notebooks](https://github.com/NielsRogge/Transformers-Tutorials/tree/master/DETR)
 6. [huggingface.co: Про DETR](https://huggingface.co/docs/transformers/model_doc/detr)
 7. [Статья End-to-End Object Detection with Transformers](https://arxiv.org/abs/2005.12872)
-8. [Streamlit](https://streamlit.io/)
+8. [FastAPI](https://fastapi.tiangolo.com/)
 
 ### Обновление
 - Заменили библиотеку matplotlib на PIL
-- Добавили Streamlit
+- Добавили поддержку API
 
 ### Авторы
 - [Искужин И.Р.](https://github.com/Lemeri02)
 - [Акинин Дмитрий В.](https://github.com/AkininD)
 - [Ахметов Вадим М.](https://github.com/vadim328)
 
-### Проект на Streamlit
-https://akinind-group-14-ml-main-bolx2g.streamlit.app/
 
 студенты 1 курса магистратуры "Инженерия машинного обучения" УрФУ.
 
-ноябрь, 2022 год.
+Декабрь, 2022 год.

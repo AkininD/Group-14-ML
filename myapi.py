@@ -1,11 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
-from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 import main
-
-
-class Item(BaseModel):
-    text: str
 
 
 app = FastAPI()
