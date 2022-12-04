@@ -81,7 +81,7 @@ http://127.0.0.1:8000/docs
 
 ### Пример как работает программа
 
-<img src=".github/example1.png" alt="Json-answer" width="400"/>
+<img src=".github/example.png" alt="Json-answer" width="400"/>
 
 ### Issues
 
