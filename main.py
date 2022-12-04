@@ -52,7 +52,7 @@ def detect_objects(image_data, name):
     image = Image.open(io.BytesIO(image_data))
     #image.save(io.BytesIO(), 'jpeg')
     result = dict()
-    scores, boxes = helpers.detect(image, model, transform)
+    scores, boxes = helpers.detect(image, load_model(), transform)
     for p, (xmin, ymin, xmax, ymax), c in zip(scores, boxes.tolist(), COLORS * 100):
         cl = p.argmax()
         text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
@@ -70,7 +70,6 @@ def detect_objects(image_data, name):
 
 
 # Вызываем функцию загрузки модели распознавания
-model = load_model()
 
 
 """def main():
