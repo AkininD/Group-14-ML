@@ -4,8 +4,7 @@ import detrd
 import helpers
 import torchvision.transforms as T
 import io
-##import streamlit as st
-
+import uuid
 torch.set_grad_enabled(False)
 
 # COCO classes
@@ -48,28 +47,27 @@ def load_model():
     return detr
 
 
-def detect_objects(image, name):
-    #image = Image.open(io.BytesIO(image_data))
-    #image.save(io.BytesIO(), 'jpeg')
-    result = dict()
-    scores, boxes = helpers.detect(image, model, transform)
+def detect_objects(image_data, name):
+    image = Image.open(io.BytesIO(image_data))
+    result = list()
+    scores, boxes = helpers.detect(image, load_model(), transform)
     for p, (xmin, ymin, xmax, ymax), c in zip(scores, boxes.tolist(), COLORS * 100):
         cl = p.argmax()
         text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
-        result[CLASSES[cl]] = f'{p[cl]:0.2f}'
+        result.append({CLASSES[cl]: f'{p[cl]:0.2f}'})
         draw = ImageDraw.Draw(image)
         draw.rectangle(((xmin, ymin), (xmax, ymax)), fill=None, outline=c, width=2)
         font = ImageFont.truetype("./assets/roboto.ttf", 14)
         left, top, right, bottom = draw.textbbox((xmin, ymin), text, font=font)
         draw.rectangle((left - 5, top - 5, right + 5, bottom + 5), fill="yellow")
         draw.text((xmin, ymin), text, font=font, fill="black")
-    image.save(f'./static/{name}')
-    result['image_url'] = f'http://127.0.0.1:8000/static/{name}' # base_url вынести в env
+    filename = f'{uuid.uuid4()}_{name}'
+    image.save(f'./static/{filename}')
+    result.append({'image_url': f'http://127.0.0.1:8000/static/{filename}'}) # base_url вынести в env
     return result
 
 
 # Вызываем функцию загрузки модели распознавания
-model = load_model()
 
 
 """def main():
@@ -77,7 +75,5 @@ model = load_model()
     result_image, scores = detect_objects(img)
     result_image.save("new2.jpg")
     print(scores.split('/'))
-
-
 if __name__ == "__main__":
     main()"""
