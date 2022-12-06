@@ -3,3 +3,5 @@ timm
 uvicorn
 fastapi
 pydantic
+python-multipart
+python-dotenv

@@ -5,6 +5,9 @@ import helpers
 import torchvision.transforms as T
 import io
 import uuid
+from dotenv import dotenv_values
+config = dotenv_values(".env")
+
 torch.set_grad_enabled(False)
 
 # COCO classes
@@ -63,17 +66,5 @@ def detect_objects(image_data, name):
         draw.text((xmin, ymin), text, font=font, fill="black")
     filename = f'{uuid.uuid4()}_{name}'
     image.save(f'./static/{filename}')
-    result.append({'image_url': f'http://127.0.0.1:8000/static/{filename}'}) # base_url вынести в env
+    result.append({'image_url': f'{config["BASE_URL"]}/static/{filename}'})
     return result
-
-
-# Вызываем функцию загрузки модели распознавания
-
-
-"""def main():
-    img = Image.open(f'./originals/2022-11-13_00-55.png')
-    result_image, scores = detect_objects(img)
-    result_image.save("new2.jpg")
-    print(scores.split('/'))
-if __name__ == "__main__":
-    main()"""

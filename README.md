@@ -43,17 +43,21 @@ _учебный проект группы 14 Программная инжене
 - Интерпретатор Python не ниже 3.8
 - программа для просмотра изображений (jpg)
 - подключение к интернету
-- OS Ubuntu 20+ (прим: на Mac OS) или Windows(IDE: PyCharm)
+- OS Ubuntu 20+ или Windows(IDE: PyCharm)
 
 ### Запуск и работа с проектом
 
-Перед запуском кода необходимо установить зависимости:
+В файл `.env` в корне директории проекта прописать домен и порт (файл `.env` не указываем в `.gitignore`, т.к. учебный проект):
+```commandline
+PORT=8000
+DOMAIN='http://127.0.0.1'
+BASE_URL=${DOMAIN}:${PORT}
+```
+
+Перед запуском кода необходимо установить зависимости указанные в requirements.txt:
 
 ```bash
-pip install torch
-pip install timm
-pip install uvicorn
-pip install fastapi
+pip install -r requirements.txt
 ```
 
 При необходимости, обновить библиотеку Pillow:
@@ -70,18 +74,35 @@ _Примечание: Требуется PIL версии не ниже 8.0.0_
 # находясь в директории проекта запустить проект
 uvicorn myapi:app
 ```
-Открываем в браузере адрес:
+
+1. Открываем в браузере адрес:
 ```
-http://127.0.0.1:8000/docs 
+{base_url}/docs 
 ```
 
-Выбираем метод "Post" и в теле загружаем кнопкой "Выберите файл" тестовые изображения формата jpg, png и нажимаем на кнопку "Execute".
+Выбираем метод "POST" и в теле загружаем кнопкой "Выберите файл" тестовые изображения формата jpg, png и нажимаем на кнопку "Execute".
 
 В формате Json отобразятся в распознанные объекты и ссылка на распознанное изображение
 
+2. Тестирование с помощью Postman или Insomnia: 
+
+Отправляем POST запрос по адресу `{base_url}/predict`:
+- в разделе BODY выбираем form-data (или Multipart Form для Insomnia)
+- в поле key (value для Insomnia) выбираем File
+- в поле key указываем значение `file`, в поле value выбираем файл (jpg, png) из директории ПК 
+- отправляем запрос кнопкой SEND
+
+3. Если перейти по адресу из json-ответа, то можно посмотреть результат обработки (пример ниже)
+
+_При разворачивании проекта на локальном ПК, base_url обычно http://127.0.0.1:8000_
+
 ### Пример как работает программа
 
-<img src=".github/example.png" alt="Json-answer" width="400"/>
+<img src=".github/example.png" alt="Json-answer" width="800"/>
+---
+<img src=".github/insomnia_example.png" alt="Json-answer" width="800"/>
+---
+<img src=".github/example_result.png" alt="Json-answer" width="800"/>
 
 ### Issues
 

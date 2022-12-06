@@ -11,6 +11,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 def root():
     return {"message": "Hello World"}
 
+
 @app.post("/predict/")
 async def predict(file: UploadFile = File(...)):
     img = await file.read()
