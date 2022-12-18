@@ -11,6 +11,7 @@ def test_root():
     assert response.json() == {"message": "Hello World"}
 
 
+# проверка распознавания на тестовых изображениях
 def test_predict_cat():
     filename = "./tests/fixtures/cat.jpg"
     response = client.post("/predict", files={"file": ("cat.jpg", open(filename, "rb"), "image/jpeg")})
@@ -18,7 +19,7 @@ def test_predict_cat():
     assert response.status_code == 200
     assert any('cat' in d for d in predict_response)
     assert any('image_url' in d for d in predict_response)
-    tear_down()
+
 
 def test_predict_elephant():
     filename = "./tests/fixtures/elephant.jpg"
@@ -29,10 +30,14 @@ def test_predict_elephant():
     assert any('image_url' in d for d in predict_response)
     tear_down()
 
+
+# удаление тестовых файлов
 def tear_down():
     import os
     from os import listdir
     from os.path import isfile, join
     onlyfiles = [f for f in listdir('./static') if isfile(join('./static', f))]
     for file in onlyfiles:
+        if file == '.keep':
+            continue
         os.remove(f'./static/{file}')
