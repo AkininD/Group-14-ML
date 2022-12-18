@@ -34,10 +34,8 @@ def test_predict_elephant():
 # удаление тестовых файлов
 def tear_down():
     import os
-    from os import listdir
-    from os.path import isfile, join
-    onlyfiles = [f for f in listdir('./static') if isfile(join('./static', f))]
-    for file in onlyfiles:
+    files = [f for f in os.listdir('./static') if os.path.isfile(os.path.join('./static', f))]
+    for file in files:
         if file == '.keep':
             continue
         os.remove(f'./static/{file}')
