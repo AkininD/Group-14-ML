@@ -30,7 +30,17 @@ def test_predict_elephant():
     assert any('image_url' in d for d in predict_response)
     tear_down()
 
+    
+    def test_predict_sandwich():
+    filename = "./tests/fixtures/sandwich.jpg"
+    response = client.post("/predict", files={"file": ("sandwich.jpg", open(filename, "rb"), "image/jpeg")})
+    predict_response = json.loads(response.content)
+    assert response.status_code == 200
+    assert any('sandwich' in d for d in predict_response)
+    assert any('image_url' in d for d in predict_response)
+    tear_down()
 
+    
 # удаление тестовых файлов
 def tear_down():
     import os
