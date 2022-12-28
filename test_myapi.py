@@ -31,7 +31,7 @@ def test_predict_elephant():
     tear_down()
 
     
-    def test_predict_sandwich():
+def test_predict_sandwich():
     filename = "./tests/fixtures/sandwich.jpg"
     response = client.post("/predict", files={"file": ("sandwich.jpg", open(filename, "rb"), "image/jpeg")})
     predict_response = json.loads(response.content)
