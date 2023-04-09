@@ -1,4 +1,6 @@
 import torch
+
+
 # for output bounding box post-processing
 
 
@@ -20,10 +22,15 @@ def detect(im, model, transform):
     # mean-std normalize the input image (batch-size: 1)
     img = transform(im).unsqueeze(0)
 
-    # demo model only support by default images with aspect ratio between 0.5 and 2
+    # demo model only support by default images with
+    # aspect ratio between 0.5 and 2
     # if you want to use images with an aspect ratio outside this range
-    # rescale your image so that the maximum size is at most 1333 for best results
-    assert img.shape[-2] <= 1600 and img.shape[-1] <= 1600, 'demo model only supports images up to 1600 pixels on each side'
+    # rescale your image so that the maximum size
+    # is at most 1333 for best results
+    assert img.shape[-2] <= 1600 \
+           and img.shape[-1] <= 1600, 'demo model only supports images' \
+                                      'up to 1600 pixels on ' \
+                                      'each side'
 
     # propagate through the model
     outputs = model(img)

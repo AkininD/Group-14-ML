@@ -23,14 +23,17 @@ CLASSES = [
     'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake',
     'chair', 'couch', 'potted plant', 'bed', 'N/A', 'dining table', 'N/A',
     'N/A', 'toilet', 'N/A', 'tv', 'laptop', 'mouse', 'remote', 'keyboard',
-    'cell phone', 'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'N/A',
-    'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier',
+    'cell phone', 'microwave', 'oven', 'toaster', 'sink', 'refrigerator',
+    'N/A', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier',
     'toothbrush'
 ]
 
-COLORS = [(46, 139, 87), (128, 0, 0), (220, 20, 60), (255, 99, 71), (205, 92, 92), (255, 160, 122),
-          (128, 128, 0), (107, 142, 35), (0, 128, 0), (34, 139, 34), (32, 178, 170), (255, 140, 0),
-          (0, 128, 128), (95, 158, 160), (30, 144, 255), (0, 0, 128), (65, 105, 225), (186, 85, 211)]
+COLORS = [(46, 139, 87), (128, 0, 0), (220, 20, 60),
+          (255, 99, 71), (205, 92, 92), (255, 160, 122),
+          (128, 128, 0), (107, 142, 35), (0, 128, 0),
+          (34, 139, 34), (32, 178, 170), (255, 140, 0),
+          (0, 128, 128), (95, 158, 160), (30, 144, 255),
+          (0, 0, 128), (65, 105, 225), (186, 85, 211)]
 
 transform = T.Compose([
     T.Resize(800),
@@ -39,7 +42,7 @@ transform = T.Compose([
 ])
 
 
-##@st.cache(allow_output_mutation=True)
+# @st.cache(allow_output_mutation=True)
 def load_model():
     detr = detrd.Detr(num_classes=91)
     state_dict = torch.hub.load_state_dict_from_url(
@@ -54,15 +57,18 @@ def detect_objects(image_data, name):
     image = Image.open(io.BytesIO(image_data))
     result = list()
     scores, boxes = helpers.detect(image, load_model(), transform)
-    for p, (xmin, ymin, xmax, ymax), c in zip(scores, boxes.tolist(), COLORS * 100):
+    prepared_data = zip(scores, boxes.tolist(), COLORS * 100)
+    for p, (xmin, ymin, xmax, ymax), c in prepared_data:
         cl = p.argmax()
         text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
         result.append({CLASSES[cl]: f'{p[cl]:0.2f}'})
         draw = ImageDraw.Draw(image)
-        draw.rectangle(((xmin, ymin), (xmax, ymax)), fill=None, outline=c, width=2)
+        draw.rectangle(((xmin, ymin), (xmax, ymax)),
+                       fill=None, outline=c, width=2)
         font = ImageFont.truetype("./assets/roboto.ttf", 14)
         left, top, right, bottom = draw.textbbox((xmin, ymin), text, font=font)
-        draw.rectangle((left - 5, top - 5, right + 5, bottom + 5), fill="yellow")
+        draw.rectangle((left - 5, top - 5, right + 5, bottom + 5),
+                       fill="yellow")
         draw.text((xmin, ymin), text, font=font, fill="black")
     filename = f'{uuid.uuid4()}_{name}'
     image.save(f'./static/{filename}')
