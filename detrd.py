@@ -2,6 +2,7 @@ import torch
 from torch import nn
 from torchvision.models import resnet50
 
+
 class Detr(nn.Module):
     """
     Demo DETR implementation.
@@ -14,6 +15,7 @@ class Detr(nn.Module):
     The model achieves ~40 AP on COCO val5k and runs at ~28 FPS on Tesla V100.
     Only batch size 1 supported.
     """
+
     def __init__(self, num_classes, hidden_dim=256, nheads=8,
                  num_encoder_layers=6, num_decoder_layers=6):
         super().__init__()
@@ -68,6 +70,7 @@ class Detr(nn.Module):
         h = self.transformer(pos + 0.1 * h.flatten(2).permute(2, 0, 1),
                              self.query_pos.unsqueeze(1)).transpose(0, 1)
 
-        # finally project transformer outputs to class labels and bounding boxes
-        return {'pred_logits': self.linear_class(h), 
+        # finally project transformer outputs
+        # to class labels and bounding boxes
+        return {'pred_logits': self.linear_class(h),
                 'pred_boxes': self.linear_bbox(h).sigmoid()}
