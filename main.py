@@ -5,8 +5,12 @@ import helpers
 import torchvision.transforms as T
 import io
 import uuid
+import awesome_log
 from dotenv import dotenv_values
 config = dotenv_values(".env")
+
+logger = awesome_log.Logger(__name__)
+a_log = logger.printer()
 
 torch.set_grad_enabled(False)
 
@@ -44,6 +48,7 @@ transform = T.Compose([
 
 # @st.cache(allow_output_mutation=True)
 def load_model():
+    a_log.info('Model loading...')
     detr = detrd.Detr(num_classes=91)
     state_dict = torch.hub.load_state_dict_from_url(
         url='https://dl.fbaipublicfiles.com/detr/detr_demo-da2a99e9.pth',
@@ -54,6 +59,7 @@ def load_model():
 
 
 def detect_objects(image_data, name):
+    a_log.info('Object detection starting...')
     image = Image.open(io.BytesIO(image_data))
     result = list()
     scores, boxes = helpers.detect(image, load_model(), transform)
