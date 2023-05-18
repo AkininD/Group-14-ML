@@ -50,6 +50,19 @@ def test_predict_sandwich():
     tear_down()
 
 
+def test_predict_car():
+    filename = "./tests/fixtures/car.jpeg"
+    response = client.post("/predict",
+                           files={"file": ("car.jpeg",
+                                           open(filename, "rb"),
+                                           "image/jpeg")})
+    predict_response = json.loads(response.content)
+    assert response.status_code == 200
+    assert any('car' in d for d in predict_response)
+    assert any('image_url' in d for d in predict_response)
+    tear_down()
+
+
 # удаление тестовых файлов
 def tear_down():
     import os
