@@ -84,6 +84,8 @@ uvicorn myapi:app
 ```
 pytest
 
+или для проекта в docker:
+docker exec -it container_name pytest
 ```
 
 ### Запуск проекта в докере (для деплоя)
@@ -94,7 +96,9 @@ pytest
 
 ```bash
 docker build -t detr .
-docker run -dit -p 8080:8080 --restart unless-stopped detr
+docker run -d --name my_project -p 8080:8080 --restart unless-stopped detr
+ 
+--restart unless-stopped - Необязательная опция для перезапуска контейнера в случае остановки
 ```
 Приложение будет доступно на порту 8080.
 

@@ -69,6 +69,6 @@ def tear_down():
     files = [f for f in os.listdir('./static')
              if os.path.isfile(os.path.join('./static', f))]
     for file in files:
-        if file == '.keep':
+        if file == '.gitkeep':
             continue
         os.remove(f'./static/{file}')
