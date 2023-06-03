@@ -66,16 +66,16 @@ def detect_objects(image_data, name):
     prepared_data = zip(scores, boxes.tolist(), COLORS * 100)
     for p, (xmin, ymin, xmax, ymax), c in prepared_data:
         cl = p.argmax()
-        text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
+        class_name = f'{CLASSES[cl]}: {p[cl]:0.2f}'
         result.append({CLASSES[cl]: f'{p[cl]:0.2f}'})
         draw = ImageDraw.Draw(image)
         draw.rectangle(((xmin, ymin), (xmax, ymax)),
                        fill=None, outline=c, width=2)
         font = ImageFont.truetype("./assets/roboto.ttf", 14)
-        left, top, right, bottom = draw.textbbox((xmin, ymin), text, font=font)
+        left, top, right, bottom = draw.textbbox((xmin, ymin), class_name, font=font)
         draw.rectangle((left - 5, top - 5, right + 5, bottom + 5),
                        fill="yellow")
-        draw.text((xmin, ymin), text, font=font, fill="black")
+        draw.text((xmin, ymin), class_name, font=font, fill="black")
     filename = f'{uuid.uuid4()}_{name}'
     image.save(f'./static/{filename}')
     result.append({'image_url': f'{config["BASE_URL"]}/static/{filename}'})
