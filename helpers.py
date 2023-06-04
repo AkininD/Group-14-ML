@@ -27,11 +27,8 @@ def detect(im, model, transform):
     # if you want to use images with an aspect ratio outside this range
     # rescale your image so that the maximum size
     # is at most 1333 for best results
-    assert img.shape[-2] <= 1600 \
-           and img.shape[-1] <= 1600, 'demo model only supports images' \
-                                      'up to 1600 pixels on ' \
-                                      'each side'
-
+    error_message = 'demo model only supports images up to 1600 pixels on each side'
+    assert img.shape[-2] <= 1600 and img.shape[-1] <= 1600, error_message
     # propagate through the model
     outputs = model(img)
 

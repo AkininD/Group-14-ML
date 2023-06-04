@@ -6,8 +6,14 @@ import torchvision.transforms as T
 import io
 import uuid
 import awesome_log
+import yaml
+from pathlib import Path
 from dotenv import dotenv_values
-config = dotenv_values(".env")
+env = dotenv_values(".env")
+# load config file
+config_path = Path(__file__).parent / "config.yaml"
+with open(config_path, "r") as file:
+    config = yaml.load(file, Loader=yaml.FullLoader)
 
 logger = awesome_log.Logger(__name__)
 a_log = logger.printer()
@@ -15,22 +21,7 @@ a_log = logger.printer()
 torch.set_grad_enabled(False)
 
 # COCO classes
-CLASSES = [
-    'N/A', 'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
-    'train', 'truck', 'boat', 'traffic light', 'fire hydrant', 'N/A',
-    'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse',
-    'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'N/A', 'backpack',
-    'umbrella', 'N/A', 'N/A', 'handbag', 'tie', 'suitcase', 'frisbee', 'skis',
-    'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove',
-    'skateboard', 'surfboard', 'tennis racket', 'bottle', 'N/A', 'wine glass',
-    'cup', 'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich',
-    'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake',
-    'chair', 'couch', 'potted plant', 'bed', 'N/A', 'dining table', 'N/A',
-    'N/A', 'toilet', 'N/A', 'tv', 'laptop', 'mouse', 'remote', 'keyboard',
-    'cell phone', 'microwave', 'oven', 'toaster', 'sink', 'refrigerator',
-    'N/A', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier',
-    'toothbrush'
-]
+CLASSES = config["classes"]
 
 COLORS = [(46, 139, 87), (128, 0, 0), (220, 20, 60),
           (255, 99, 71), (205, 92, 92), (255, 160, 122),
@@ -51,7 +42,7 @@ def load_model():
     a_log.info('Model loading...')
     detr = detrd.Detr(num_classes=91)
     state_dict = torch.hub.load_state_dict_from_url(
-        url='https://dl.fbaipublicfiles.com/detr/detr_demo-da2a99e9.pth',
+        url=config["model_url"],
         map_location='cpu', check_hash=True)
     detr.load_state_dict(state_dict)
     detr.eval()
@@ -74,6 +65,7 @@ def creating_frame(prep_d, img):
         draw.text((xmin, ymin), class_name, font=font, fill="black")
     return res
 
+
 def detect_objects(image_data, name):
     a_log.info('Object detection starting...')
     image = Image.open(io.BytesIO(image_data))
@@ -82,5 +74,5 @@ def detect_objects(image_data, name):
     result = creating_frame(prepared_data, image)
     filename = f'{uuid.uuid4()}_{name}'
     image.save(f'./static/{filename}')
-    result.append({'image_url': f'{config["BASE_URL"]}/static/{filename}'})
+    result.append({'image_url': f'{env["BASE_URL"]}/static/{filename}'})
     return result
