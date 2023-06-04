@@ -58,17 +58,13 @@ def load_model():
     return detr
 
 
-def detect_objects(image_data, name):
-    a_log.info('Object detection starting...')
-    image = Image.open(io.BytesIO(image_data))
-    result = list()
-    scores, boxes = helpers.detect(image, load_model(), transform)
-    prepared_data = zip(scores, boxes.tolist(), COLORS * 100)
-    for p, (xmin, ymin, xmax, ymax), c in prepared_data:
+def creating_frame(prep_d, img):
+    res = list()
+    for p, (xmin, ymin, xmax, ymax), c in prep_d:
         cl = p.argmax()
         class_name = f'{CLASSES[cl]}: {p[cl]:0.2f}'
-        result.append({CLASSES[cl]: f'{p[cl]:0.2f}'})
-        draw = ImageDraw.Draw(image)
+        res.append({CLASSES[cl]: f'{p[cl]:0.2f}'})
+        draw = ImageDraw.Draw(img)
         draw.rectangle(((xmin, ymin), (xmax, ymax)),
                        fill=None, outline=c, width=2)
         font = ImageFont.truetype("./assets/roboto.ttf", 14)
@@ -76,6 +72,14 @@ def detect_objects(image_data, name):
         draw.rectangle((left - 5, top - 5, right + 5, bottom + 5),
                        fill="yellow")
         draw.text((xmin, ymin), class_name, font=font, fill="black")
+    return res
+
+def detect_objects(image_data, name):
+    a_log.info('Object detection starting...')
+    image = Image.open(io.BytesIO(image_data))
+    scores, boxes = helpers.detect(image, load_model(), transform)
+    prepared_data = zip(scores, boxes.tolist(), COLORS * 100)
+    result = creating_frame(prepared_data, image)
     filename = f'{uuid.uuid4()}_{name}'
     image.save(f'./static/{filename}')
     result.append({'image_url': f'{config["BASE_URL"]}/static/{filename}'})
